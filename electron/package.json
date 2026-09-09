@@ -1,6 +1,6 @@
 {
   "name": "teyvat-irminsul",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Teyvat Irminsul · 提瓦特世界树（Electron + Python 混合架构）",
   "main": "main.js",
   "author": "Teyvat Irminsul",

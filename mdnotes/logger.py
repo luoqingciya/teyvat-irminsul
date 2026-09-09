@@ -36,7 +36,7 @@ def _setup_logger() -> logging.Logger:
         log_dir = _get_log_dir()
         log_file = log_dir / f"mdnotes_{datetime.now().strftime('%Y%m%d')}.log"
         fh = logging.FileHandler(str(log_file), encoding="utf-8")
-        fh.setLevel(logging.DEBUG)
+        fh.setLevel(logging.INFO)
         fh.setFormatter(fmt)
         logger.addHandler(fh)
         _cleanup_old_logs(log_dir, keep_days=30)

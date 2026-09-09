@@ -188,21 +188,29 @@ _EXTENSION_CONFIGS = {
     },
 }
 
-# 复用单例 Markdown 实例：每次 render 都重建实例（含所有扩展初始化）开销很大。
-# render 由本地 HTTP 服务多个线程并发调用，因此用锁串行化 convert，避免实例状态串扰。
-_MD_LOCK = threading.Lock()
-_MD_INSTANCE = markdown.Markdown(
-    extensions=_EXTENSIONS + ["pymdownx.superfences"],
-    extension_configs=_EXTENSION_CONFIGS,
-)
+# Markdown 实例：每次 render 都重建实例（含所有扩展初始化）开销很大，因此复用。
+# 但实例带可变状态（reset/convert 交替），多线程并发复用会串扰，
+# 故按线程隔离（thread-local），既避免锁串行化，也保证并发安全。
+_THREAD_LOCAL = threading.local()
+
+
+def _md_instance() -> "markdown.Markdown":
+    inst = getattr(_THREAD_LOCAL, "md", None)
+    if inst is None:
+        inst = markdown.Markdown(
+            extensions=_EXTENSIONS + ["pymdownx.superfences"],
+            extension_configs=_EXTENSION_CONFIGS,
+        )
+        _THREAD_LOCAL.md = inst
+    return inst
 
 
 def render(text: str) -> str:
     """将 Markdown 文本渲染为 HTML，并做安全消毒。"""
     text = _highlight_equals(text)
-    with _MD_LOCK:
-        _MD_INSTANCE.reset()
-        html = _MD_INSTANCE.convert(text)
+    inst = _md_instance()
+    inst.reset()
+    html = inst.convert(text)
     # [[双链]] -> 可点击链接，由前端解析目标笔记（标题转义，防止属性逃逸）
     html = _WIKILINK.sub(
         lambda m: '<a class="wikilink" data-target="%s" href="#">%s</a>' % (

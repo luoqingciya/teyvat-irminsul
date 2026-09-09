@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import hmac
 import json
 import os
 import threading
@@ -86,8 +87,16 @@ class _ApiHandler(BaseHTTPRequestHandler):
     # ── API 分发 ──────────────────────────────────────────
 
     def _authorized(self) -> bool:
-        """token 校验：配置了 api_token 时，请求必须携带匹配的 X-Auth-Token。"""
-        return not self.api_token or self.headers.get("X-Auth-Token") == self.api_token
+        """token 校验：未注入 token（独立启动/调试）或请求不匹配时一律拒绝。
+
+        使用 hmac.compare_digest 做常量时间比较，避免时序侧信道。
+        """
+        if not self.api_token:
+            return False
+        incoming = self.headers.get("X-Auth-Token") or ""
+        if not incoming:
+            return False
+        return hmac.compare_digest(incoming, self.api_token)
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path

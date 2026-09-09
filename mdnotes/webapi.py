@@ -141,6 +141,22 @@ class WebAPI:
             raise ValueError(f"非法路径: {rel_path}")
         return target
 
+    def _safe_img_rel(self, imgpath: str) -> str | None:
+        """校验图片相对路径：拒绝 ``..`` 分量/盘符/空段，返回清理后的相对路径。
+
+        预览渲染会把相对路径拼成 ``file://`` URI，导出 PNG 时又会按相对路径
+        读取本地文件——两者都必须防止 ``../`` 逃出笔记目录。
+        """
+        imgpath = imgpath.lstrip("/").split("?")[0].split("#")[0]
+        if not imgpath:
+            return None
+        parts = imgpath.replace("\\", "/").split("/")
+        if any(p in ("", "..") for p in parts):
+            return None
+        if ":" in parts[0]:
+            return None
+        return imgpath
+
     def _tree_node(self, path: Path, is_dir: bool, name: str) -> dict[str, Any]:
         return {
             "name": name,
@@ -515,7 +531,9 @@ class WebAPI:
                 prefix, imgpath, suffix = match.group(1), match.group(2), match.group(3)
                 if imgpath.startswith(("http://", "https://", "data:")):
                     return match.group(0)
-                imgpath = imgpath.lstrip("/").split("?")[0].split("#")[0]
+                imgpath = self._safe_img_rel(imgpath)
+                if imgpath is None:
+                    return f"{prefix}{suffix}"
                 candidate = (self._notes_dir / imgpath).resolve()
                 if candidate.is_file():
                     try:

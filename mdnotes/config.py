@@ -1,4 +1,7 @@
 import copy
+import base64
+import getpass
+import hashlib
 import json
 import os
 import sys
@@ -6,6 +9,48 @@ from pathlib import Path
 from typing import Any
 
 from . import auth
+
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    _HAS_CRYPTO = True
+except Exception:  # noqa: BLE001 缺少 cryptography 时降级为明文（仅影响 WebDAV 密码存储）
+    _HAS_CRYPTO = False
+
+# WebDAV 密码保密存储：`wd_enc1:` 前缀标记 AES-256-GCM 密文，
+# 密钥由当前用户名派生。防「config.json 被随手翻阅/拷走」场景；
+# 运行期 load_config 自动解密回明文使用（本机同用户可透明解密）。
+_SECRET_PREFIX = "wd_enc1:"
+
+
+def _secret_key() -> bytes:
+    raw = (getpass.getuser() + "@teyvat-irminsul-webdav-v1").encode("utf-8")
+    return hashlib.pbkdf2_hmac("sha256", raw, b"mdnotes-webdav-iv1", 50_000, dklen=32)
+
+
+def _encrypt_secret(plain: str) -> str:
+    """加密 WebDAV 密码为带前缀的密文串；无法加密时原样返回。"""
+    if not _HAS_CRYPTO or not plain or plain.startswith(_SECRET_PREFIX):
+        return plain
+    try:
+        key = _secret_key()
+        nonce = os.urandom(12)
+        ct = AESGCM(key).encrypt(nonce, plain.encode("utf-8"), None)
+        return _SECRET_PREFIX + base64.b64encode(nonce + ct).decode("ascii")
+    except Exception:  # noqa: BLE001
+        return plain
+
+
+def _decrypt_secret(stored: str) -> str:
+    """解密存储的 WebDAV 密码；非加密串原样返回，解密失败返回空串。"""
+    if not stored.startswith(_SECRET_PREFIX):
+        return stored
+    try:
+        key = _secret_key()
+        blob = base64.b64decode(stored[len(_SECRET_PREFIX):])
+        nonce, ct = blob[:12], blob[12:]
+        return AESGCM(key).decrypt(nonce, ct, None).decode("utf-8")
+    except Exception:  # noqa: BLE001
+        return ""
 
 
 DEFAULT_CONFIG = {
@@ -128,7 +173,7 @@ def load_config() -> dict[str, Any]:
     if os.environ.get("MDNOTES_WEBDAV_PASSWORD"):
         config["webdav"]["password"] = os.environ["MDNOTES_WEBDAV_PASSWORD"]
     else:
-        config["webdav"]["password"] = _expand(config["webdav"].get("password", ""))
+        config["webdav"]["password"] = _decrypt_secret(config["webdav"].get("password", ""))
 
     # 确保笔记目录存在
     notes_dir = Path(config["notes_dir"])
@@ -153,6 +198,8 @@ def save_config(config: dict[str, Any]) -> None:
         data["server"]["auth_token"] = auth.hash_token(token)
     if os.environ.get("MDNOTES_WEBDAV_PASSWORD"):
         data["webdav"]["password"] = ""
+    elif data.get("webdav", {}).get("password"):
+        data["webdav"]["password"] = _encrypt_secret(str(data["webdav"]["password"]))
     config_path.parent.mkdir(parents=True, exist_ok=True)
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
