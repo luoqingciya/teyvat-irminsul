@@ -49,7 +49,7 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "target": ["nsis", "zip"],
       "icon": "../mdnotes/static/icon.ico"
     }
   }
