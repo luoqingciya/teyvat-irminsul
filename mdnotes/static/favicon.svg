@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#142246"/>
+      <stop offset="100%" stop-color="#08152a"/>
+    </linearGradient>
+    <linearGradient id="leafTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a7f4e2"/>
+      <stop offset="100%" stop-color="#43e2c7"/>
+    </linearGradient>
+    <linearGradient id="leafMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5fe9d0"/>
+      <stop offset="100%" stop-color="#2ccfb4"/>
+    </linearGradient>
+    <linearGradient id="leafLow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3fdcc0"/>
+      <stop offset="100%" stop-color="#1fae95"/>
+    </linearGradient>
+    <linearGradient id="trunk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9db0de"/>
+      <stop offset="100%" stop-color="#465a8c"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <!-- 树冠光晕 -->
+  <circle cx="32" cy="25" r="18" fill="#55e6cf" opacity="0.14"/>
+  <circle cx="32" cy="25" r="11" fill="#b9f9ec" opacity="0.08"/>
+  <!-- 树干 -->
+  <path d="M30 37 L34 37 L33.2 53 L30.8 53 Z" fill="url(#trunk)"/>
+  <!-- 树冠：低多边形三层 -->
+  <polygon points="32,8 22,21 42,21" fill="url(#leafTop)"/>
+  <polygon points="32,14 17,34 47,34" fill="url(#leafMid)"/>
+  <polygon points="32,23 21,45 43,45" fill="url(#leafLow)"/>
+  <!-- 世界树核心光脉 -->
+  <path d="M32 22 L32 46" stroke="#d9fff6" stroke-width="1.4" opacity="0.55" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,59 @@
+[project]
+name = "mdnotes"
+version = "1.0.0"
+description = "原生桌面 Markdown 笔记工具（Electron + Python 混合架构 / Web 技术栈 UI / 实时预览 / 本地 Git 历史版本 / WebDAV 同步）"
+requires-python = ">=3.10"
+dependencies = [
+    # Markdown 渲染
+    "Markdown>=3.7",
+    "pymdown-extensions>=10.12",
+    "pygments>=2.18",
+    # 工具
+    "python-dotenv>=1.0",
+    "requests>=2.32",
+    "aiofiles>=24.1",
+    "Pillow>=10.0",
+    # 单篇笔记加密（AES-GCM）
+    "cryptography>=42.0",
+]
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+# 旧版 Qt 入口代码（app.py + ui/）已在迁移阶段 5 删除。
+# PySide6 依赖仅作历史声明保留，运行 `uv sync --extra qt` 不会重建已删除的入口。
+qt = [
+    "PySide6>=6.6,<6.14",
+]
+
+[project.scripts]
+mdnotes-backend = "mdnotes.electron_server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mdnotes"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "mdnotes/**/*",
+    "pyproject.toml",
+]
+
+[tool.uv]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+# 保守规则集：明显的错误与未用导入，不强行风格统一
+select = ["E9", "F", "W605"]
+ignore = ["F841"]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.21.0",
+]

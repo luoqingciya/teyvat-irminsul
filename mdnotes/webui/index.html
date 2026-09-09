@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teyvat Irminsul · 提瓦特世界树</title>
+  <link rel="icon" type="image/svg+xml" href="../static/favicon.svg">
+
+  <!-- CodeMirror 5（本地离线） -->
+  <link rel="stylesheet" href="../static/vendor/codemirror/codemirror.min.css">
+  <link rel="stylesheet" href="../static/vendor/codemirror/theme/material-darker.min.css">
+  <link rel="stylesheet" href="../static/vendor/codemirror/addon/hint/show-hint.min.css">
+
+  <!-- KaTeX / Mermaid（本地离线，复用原 Qt 版资源） -->
+  <link rel="stylesheet" href="../static/vendor/katex/katex.min.css">
+
+  <!-- 应用样式 -->
+  <link rel="stylesheet" href="css/theme.css?v=20260828">
+  <link rel="stylesheet" href="css/layout.css?v=20260828">
+  <link rel="stylesheet" href="css/preview.css?v=20260828">
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部工具栏 -->
+    <div id="toolbar">
+      <!-- 左区：应用标识 + 导航/笔记操作 -->
+      <div class="tb-group">
+        <span class="title">Teyvat Irminsul</span>
+        <button class="btn" id="btn-toggle-sidebar" title="显示/隐藏侧栏">☰</button>
+        <button class="btn" id="btn-new" title="新建笔记">+ 笔记</button>
+        <button class="btn" id="btn-save" title="保存 (Ctrl+S)">保存</button>
+      </div>
+      <!-- 视图切换 -->
+      <div class="tb-group">
+        <button class="btn" id="btn-toggle-outline" title="大纲">大纲</button>
+        <button class="btn" id="btn-toggle-preview" title="预览">预览</button>
+      </div>
+      <span class="spacer"></span>
+      <span class="file-label" id="file-label">未打开笔记</span>
+      <span class="spacer"></span>
+      <!-- 常用功能直接外露 -->
+      <div class="tb-group">
+        <button class="btn" id="btn-sync" title="同步">🔄 同步</button>
+        <button class="btn" id="btn-daily" title="每日笔记 (Ctrl+D)">📅 每日</button>
+        <button class="btn" id="btn-flash" title="闪念笔记 (Ctrl+Shift+N)">⚡ 闪念</button>
+        <button class="btn" id="btn-history" title="历史版本">🕑 历史</button>
+        <button class="btn" id="btn-settings" title="设置">⚙ 设置</button>
+      </div>
+      <!-- 系统：更多菜单 + 聚焦模式 -->
+      <div class="tb-group">
+        <button class="btn" id="btn-more" title="更多功能">⋯</button>
+        <div class="tb-more" id="tb-more">
+        <!-- 导入二级菜单 -->
+        <div class="submenu" id="menu-import">
+          <button class="btn submenu-title" data-submenu="menu-import">📥 导入 ▾</button>
+          <div class="submenu-body">
+            <button class="btn" id="btn-import-folder" title="从文件夹导入 Markdown">📁 导入文件夹</button>
+            <button class="btn" id="btn-import-yuque" title="导入语雀导出的知识库">🌿 导入语雀</button>
+            <button class="btn" id="btn-import-notion" title="导入 Notion 导出的知识库">📝 导入 Notion</button>
+            <button class="btn" id="btn-import-zip" title="从 ZIP 导入">⬆ 导入ZIP</button>
+          </div>
+        </div>
+        <!-- 导出二级菜单 -->
+        <div class="submenu" id="menu-export">
+          <button class="btn submenu-title" data-submenu="menu-export">📤 导出 ▾</button>
+          <div class="submenu-body">
+            <button class="btn" id="btn-export" title="导出 ZIP">⬇ 导出ZIP</button>
+            <button class="btn" id="btn-export-site" title="导出为静态网站（含搜索+图谱）">🌐 导出网站</button>
+            <button class="btn" id="btn-pdf" title="导出 PDF（打印对话框）">📄 PDF</button>
+            <button class="btn" id="btn-png" title="导出当前笔记为图片 PNG">🖼 导出PNG</button>
+          </div>
+        </div>
+        <!-- 工具二级菜单 -->
+        <div class="submenu" id="menu-tools">
+          <button class="btn submenu-title" data-submenu="menu-tools">🧰 工具 ▾</button>
+          <div class="submenu-body">
+            <button class="btn" id="btn-backlinks" title="反向链接">🔗 反向链接</button>
+            <button class="btn" id="btn-unlinked" title="未关联笔记">🔍̸ 未关联</button>
+            <button class="btn" id="btn-trash" title="回收站">🗑 回收站</button>
+            <button class="btn" id="btn-orphan" title="孤儿附件清理">🧹 清理</button>
+            <button class="btn" id="btn-note-props" title="笔记属性">ℹ 属性</button>
+            <button class="btn" id="btn-encrypt" title="加密/解密当前笔记">🔒 加密笔记</button>
+            <button class="btn" id="btn-applock" title="设置应用锁">🗝 应用锁</button>
+            <button class="btn" id="btn-batchtag" title="批量打标签">🏷 批量标签</button>
+            <button class="btn" id="btn-startup" title="开机自启">开机自启</button>
+          </div>
+        </div>
+        <button class="btn" id="btn-fav" title="收藏当前笔记">⭐ 收藏</button>
+        <button class="btn" id="btn-about" title="关于">关于</button>
+        </div>
+        <button class="btn" id="btn-focus" title="聚焦模式 (Ctrl+.)">🔆</button>
+        <input type="file" id="import-file" accept=".zip" style="display:none">
+      </div>
+    </div>
+
+    <!-- 主区域：侧边栏 | 分隔 | 编辑器(含标签栏) | 分隔 | 大纲 | 分隔 | 预览 -->
+    <div id="main">
+      <aside id="sidebar">
+        <div class="sidebar-head">
+          <button class="btn" id="btn-new-folder" title="新建文件夹">+ 文件夹</button>
+          <button class="btn" id="btn-refresh" title="刷新">↻</button>
+        </div>
+        <div class="side-tabs">
+          <button class="side-tab active" data-tab="files" title="文件">📂</button>
+          <button class="side-tab" data-tab="search" title="搜索">🔍</button>
+          <button class="side-tab" data-tab="favorites" title="收藏">⭐</button>
+          <button class="side-tab" data-tab="recent" title="最近文件">🕒</button>
+          <div class="side-more">
+            <button class="side-tab side-tab-more" title="更多">⋮</button>
+            <div class="side-more-menu">
+              <button class="side-tab" data-tab="tasks" title="任务视图">☑ 任务</button>
+              <button class="side-tab" data-tab="attachments" title="附件管理器">📎 附件</button>
+              <button class="side-tab" data-tab="overview" title="笔记总览">🗂 总览</button>
+              <button class="side-tab" data-tab="tags" title="标签">🏷 标签</button>
+              <button class="side-tab" data-tab="graph" title="关系图谱">🕸 图谱</button>
+              <button class="side-tab" data-tab="heatmap" title="字数热力图">📊 热力</button>
+              <button class="side-tab" data-tab="templates" title="模板笔记">📋 模板</button>
+            </div>
+          </div>
+        </div>
+        <div id="side-files" class="side-panel">
+          <div id="filetree"></div>
+        </div>
+        <div id="side-search" class="side-panel" style="display:none">
+          <input type="text" id="search-input" placeholder="搜索笔记内容…" class="input">
+          <select id="search-scope" class="input" title="搜索范围">
+            <option value="">全库</option>
+          </select>
+          <select id="search-saved" class="input" title="保存的搜索">
+            <option value="">保存的搜索…</option>
+          </select>
+          <div class="search-filter">
+            <input type="text" id="search-tag" class="input" placeholder="标签过滤，如 #项目">
+            <input type="date" id="search-date-from" class="input" title="起始日期">
+            <input type="date" id="search-date-to" class="input" title="结束日期">
+            <button class="btn" id="btn-search-save" title="保存当前搜索">💾</button>
+          </div>
+          <div id="search-results"></div>
+        </div>
+        <div id="side-tasks" class="side-panel" style="display:none">
+          <div class="panel-bar">
+            <select id="task-filter" class="input" title="任务筛选">
+              <option value="">全部任务</option>
+              <option value="open">未完成</option>
+              <option value="done">已完成</option>
+            </select>
+            <span class="tip" id="task-stat"></span>
+          </div>
+          <div id="task-list"></div>
+        </div>
+        <div id="side-attachments" class="side-panel" style="display:none">
+          <div class="panel-bar">
+            <button class="btn" id="btn-att-refresh" title="刷新附件">↻ 刷新</button>
+            <span class="tip" id="att-stat"></span>
+          </div>
+          <div id="attachment-list"></div>
+        </div>
+        <div id="side-overview" class="side-panel" style="display:none">
+          <div class="panel-bar">
+            <select id="ov-view" class="input" title="视图">
+              <option value="table">表格</option>
+              <option value="board">看板</option>
+            </select>
+            <select id="ov-group" class="input" title="看板分组字段">
+              <option value="status">按状态</option>
+              <option value="priority">按优先级</option>
+              <option value="folder">按文件夹</option>
+            </select>
+          </div>
+          <input type="text" id="ov-filter" class="input" placeholder="筛选标题/标签…">
+          <div id="overview-list"></div>
+        </div>
+        <div id="side-tags" class="side-panel" style="display:none">
+          <button class="btn" id="btn-refresh-tags" title="刷新标签">↻ 标签</button>
+          <button class="btn" id="btn-rename-tag" title="重命名标签">✎ 重命名</button>
+          <div class="tip tag-tip">拖动标签可整理层级 · 点击色点设置颜色</div>
+          <div id="tag-list"></div>
+        </div>
+        <div id="side-recent" class="side-panel" style="display:none">
+          <div id="recent-list"></div>
+        </div>
+        <div id="side-favorites" class="side-panel" style="display:none">
+          <div id="favorites-list"></div>
+        </div>
+        <div id="side-graph" class="side-panel" style="display:none">
+          <div class="graph-bar">
+            <button class="btn" id="btn-graph-rebuild" title="重建图谱">↻ 重建</button>
+            <span class="tip" id="graph-stat"></span>
+          </div>
+          <div id="graph-canvas"></div>
+          <div class="graph-tip tip">点击节点打开笔记 · 拖拽移动 · 滚轮缩放</div>
+        </div>
+        <div id="side-heatmap" class="side-panel" style="display:none">
+          <div class="graph-bar">
+            <button class="btn" id="btn-heat-range" title="切换时间范围">近 120 天</button>
+            <span class="tip" id="heat-stat"></span>
+          </div>
+          <div id="heatmap-grid"></div>
+          <div class="heat-tip tip">颜色越深 = 当天书写越多 · 点击某天可看总量</div>
+          <div class="heat-detail" id="heat-detail"></div>
+        </div>
+        <div id="side-templates" class="side-panel" style="display:none">
+          <div class="graph-bar">
+            <button class="btn" id="btn-new-from-tpl" title="从模板新建笔记">＋ 从模板新建</button>
+            <button class="btn" id="btn-manage-tpl" title="管理模板">管理</button>
+          </div>
+          <div id="template-list"></div>
+        </div>
+      </aside>
+
+      <div class="gutter" id="gutter-side"></div>
+
+      <section id="editor-pane">
+        <div id="tabbar"></div>
+        <div id="editor-toolbar">
+          <button class="etb" data-act="bold" title="加粗 (Ctrl+B)">B</button>
+          <button class="etb" data-act="italic" title="斜体 (Ctrl+I)">I</button>
+          <button class="etb" data-act="h1" title="一级标题">H1</button>
+          <button class="etb" data-act="h2" title="二级标题">H2</button>
+          <button class="etb" data-act="ul" title="无序列表">• 列表</button>
+          <button class="etb" data-act="ol" title="有序列表">1. 列表</button>
+          <button class="etb" data-act="task" title="任务清单">☑ 任务</button>
+          <button class="etb" data-act="quote" title="引用">❝ 引用</button>
+          <button class="etb" data-act="code" title="代码块">⟨⟩ 代码</button>
+          <button class="etb" data-act="table" title="插入表格">▦ 表格</button>
+          <button class="etb" data-act="link" title="链接 (Ctrl+K 行内)">🔗 链接</button>
+          <button class="etb" data-act="image" title="插入图片">🖼 图片</button>
+        </div>
+        <div id="editor-host"></div>
+        <div id="editor-empty" class="editor-empty" style="display:none">
+          <div class="ee-inner">
+            <div class="ee-logo">✦</div>
+            <h2 class="ee-title">Teyvat Irminsul · 提瓦特世界树</h2>
+            <p class="ee-sub">从左侧文件树选择笔记，或新建一篇开始书写</p>
+            <button class="btn primary" id="ee-new">+ 新建笔记</button>
+            <div class="ee-hint">
+              <span>Ctrl+P 快速切换</span><span>Ctrl+D 每日笔记</span>
+              <span>Ctrl+Shift+N 闪念</span><span>Ctrl+. 聚焦模式</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="gutter" id="gutter-outline"></div>
+
+      <aside id="outline-pane">
+        <div id="outline-head">大纲</div>
+        <div id="outline"></div>
+      </aside>
+
+      <div class="gutter" id="gutter-preview"></div>
+
+      <section id="preview-pane">
+        <div id="preview-toolbar">
+          <span class="pt-title">预览</span>
+          <span class="spacer"></span>
+          <button class="btn pt-fullscreen" id="btn-preview-full" title="全屏预览 (Esc 退出)">⛶ 全屏</button>
+        </div>
+        <div id="preview"></div>
+        <aside id="preview-outline" class="preview-outline">
+          <div class="po-head">目录</div>
+          <div id="po-list"></div>
+        </aside>
+      </section>
+    </div>
+
+    <!-- 状态栏 -->
+    <div id="statusbar">
+      <span id="status-words">0 字</span>
+      <span id="status-lines">0 行</span>
+      <span id="status-save" class="saved-ok">已保存</span>
+      <span class="spacer"></span>
+      <span id="status-notesdir" class="tip"></span>
+    </div>
+  </div>
+
+  <!-- 闪念笔记浮层输入框 -->
+  <div id="flash-overlay" class="flash-overlay" style="display:none">
+    <input type="text" id="flash-input" class="flash-input" placeholder="闪念一下，回车保存为 inbox/… （Esc 取消）">
+  </div>
+
+  <!-- 模态层（快速切换器 / 反向链接 / 未关联 / 回收站） -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none">
+    <div id="modal-box" class="modal-box">
+      <div id="modal-head" class="modal-head"></div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 应用锁遮罩层 -->
+  <div id="app-lock" class="app-lock" style="display:none">
+    <div class="app-lock-box">
+      <div class="app-lock-logo">🗝</div>
+      <div class="app-lock-title">输入应用锁密码</div>
+      <input type="password" id="app-lock-input" class="input app-lock-input" placeholder="应用锁密码">
+      <div class="app-lock-actions">
+        <button class="btn primary" id="app-lock-unlock">解锁</button>
+        <button class="btn" id="app-lock-reset">重设密码</button>
+      </div>
+      <div class="tip app-lock-msg" id="app-lock-msg"></div>
+    </div>
+  </div>
+
+  <!-- 标签页右键菜单 -->
+  <div id="tab-menu" class="tab-menu"></div>
+
+  <!-- 脚本（全部本地，离线可用） -->
+  <script src="../static/vendor/codemirror/codemirror.min.js"></script>
+  <script src="../static/vendor/codemirror/mode/markdown/markdown.min.js"></script>
+  <script src="../static/vendor/codemirror/addon/hint/show-hint.min.js"></script>
+  <script src="../static/vendor/codemirror/addon/edit/closebrackets.min.js"></script>
+  <script src="../static/vendor/codemirror/addon/edit/matchbrackets.min.js"></script>
+
+  <script src="../static/vendor/katex/katex.min.js"></script>
+  <script src="../static/vendor/mermaid/mermaid.min.js"></script>
+  <script src="../static/vendor/cytoscape/cytoscape.min.js"></script>
+
+  <script src="js/app.js?v=20260828"></script>
+</body>
+</html>

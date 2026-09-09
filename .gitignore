@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+.uv_cache/
+
+# Project runtime data
+.mdnotes/
+.env
+config.json
+notes/
+
+# Build artifacts
+build/
+dist/
+*.whl
+*.spec
+*.ico
+
+# Electron（node 依赖与 electron-builder 产物）
+electron/node_modules/
+electron/release/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# IDE / 工具
+.trae/
+.vscode/
+.idea/
+.workbuddy/

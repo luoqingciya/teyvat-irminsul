@@ -1,0 +1,47 @@
+{
+  "name": "teyvat-irminsul",
+  "version": "1.0.0",
+  "description": "Teyvat Irminsul · 提瓦特世界树（Electron + Python 混合架构）",
+  "main": "main.js",
+  "author": "Teyvat Irminsul",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.teyvat.irminsul",
+    "productName": "TeyvatIrminsul",
+    "directories": {
+      "output": "release",
+      "buildResources": "../mdnotes/static"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../mdnotes/webui",
+        "to": "webui"
+      },
+      {
+        "from": "../mdnotes/static",
+        "to": "static"
+      },
+      {
+        "from": "../dist/TeyvatIrminsulBackend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../mdnotes/static/icon.ico"
+    }
+  }
+}

@@ -1,0 +1,223 @@
+/* ===========================================================
+   MDNotes Web · 原神风格主题（由 ui/theme.py 的 QSS 配色转 CSS 变量）
+   深蓝夜空 + 金色神瞳 + 青蓝元素力
+   =========================================================== */
+:root {
+  /* 背景层级 */
+  --c-bg0: #0f0f1a;   /* 最深背景 */
+  --c-bg1: #161625;   /* 主背景 */
+  --c-bg2: #1e1e32;   /* 面板/卡片背景 */
+  --c-bg3: #282840;   /* 悬停/选中背景 */
+  --c-bg4: #323258;   /* 边框/分隔线 */
+
+  /* 文字 */
+  --c-fg0: #ebeef5;   /* 主文字 */
+  --c-fg1: #c0c4d0;   /* 次要文字 */
+  --c-fg2: #8888a0;   /* 辅助文字 */
+
+  /* 元素力配色 */
+  --c-primary: #4cc9f0;   /* 青蓝 */
+  --c-accent:  #f0a050;   /* 金橙 */
+  --c-success: #5cb85c;   /* 草绿 */
+  --c-danger:  #e0556a;   /* 火红 */
+  --c-warning: #f0c050;   /* 雷黄 */
+
+  --c-selection: #2a5080; /* 选中文字背景 */
+  --c-line: #2a2a40;      /* 当前行高亮 */
+
+  /* 元素力光晕（原神风氛围） */
+  --c-glow: rgba(76, 201, 240, 0.28);       /* 青蓝光晕 */
+  --c-glow-warm: rgba(240, 160, 80, 0.25);  /* 金橙光晕 */
+  --c-gradient-bar: linear-gradient(180deg, #1b1b30 0%, #161625 100%);
+  --c-gradient-side: linear-gradient(180deg, #1a1a2e 0%, #141422 100%);
+
+  --font-ui: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+
+  --radius: 8px;
+  --radius-lg: 10px;
+
+  /* ── 现代化设计令牌（P 布局升级） ─────────────────── */
+  /* 圆角阶梯 */
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-full: 999px;
+  /* 阴影层级（浮层由轻到重） */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.24), 0 6px 16px rgba(0, 0, 0, 0.18);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.32), 0 16px 48px rgba(0, 0, 0, 0.24);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.42);
+  /* 玻璃拟态 */
+  --glass-bg: rgba(22, 22, 37, 0.82);
+  --glass-blur: blur(14px) saturate(140%);
+  /* 悬停/激活底（用纯色插值，避免与 bg 层级混淆） */
+  --c-hover: rgba(255, 255, 255, 0.05);
+  --c-active: rgba(76, 201, 240, 0.10);
+  /* 分割线（更柔和的边框色） */
+  --c-border: rgba(255, 255, 255, 0.08);
+  --c-border-strong: rgba(255, 255, 255, 0.12);
+  /* 过渡时长 */
+  --t-fast: 120ms;
+  --t-med: 200ms;
+}
+
+/* 全局 */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--c-bg0);
+  color: var(--c-fg0);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+::selection { background: var(--c-selection); color: var(--c-fg0); }
+
+/* 滚动条（更纤细、更现代） */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--c-bg4); border-radius: 4px; min-height: 32px;
+  border: 2px solid transparent; background-clip: padding-box;
+  opacity: 0.6;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--c-primary); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* 按钮 */
+.btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  padding: 6px 12px;
+  color: var(--c-fg1);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  min-height: 22px;
+  white-space: nowrap;
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+.btn:hover { background: var(--c-hover); color: var(--c-fg0); }
+.btn:active { transform: translateY(1px); }
+.btn.primary {
+  background: linear-gradient(135deg, var(--c-primary) 0%, color-mix(in srgb, var(--c-primary) 70%, var(--c-accent)) 100%);
+  color: var(--c-bg0);
+  border: none;
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
+.btn.primary:hover { filter: brightness(1.08); box-shadow: var(--shadow-2); }
+.btn.danger { background: var(--c-danger); color: #fff; border: none; }
+
+/* 输入框 */
+input[type="text"], .input {
+  background: var(--c-bg2);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-md);
+  padding: 7px 12px;
+  color: var(--c-fg0);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+}
+input[type="text"]:focus, .input:focus { border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-glow); }
+input[type="text"]:hover, .input:hover { border-color: var(--c-bg4); }
+input::placeholder { color: var(--c-fg2); }
+
+/* 设置面板：复选框行 */
+.cfg-row.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.cfg-row.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--c-primary);
+  cursor: pointer;
+}
+
+
+/* 工具提示 */
+.tip { color: var(--c-fg2); font-size: 12px; }
+
+/* ===========================================================
+   多主题（P3）：通过 body[data-theme="xxx"] 覆盖 CSS 变量
+   =========================================================== */
+/* 晨曦（亮色） */
+body[data-theme="light"] {
+  --c-bg0: #f4f6fb;  --c-bg1: #ffffff;  --c-bg2: #eef1f7;  --c-bg3: #e2e7f0;
+  --c-bg4: #cfd6e4;  --c-fg0: #1f2533;  --c-fg1: #3a4252;  --c-fg2: #7a8295;
+  --c-primary: #2f80c8;  --c-accent: #e0962f;  --c-success: #3a9b54;
+  --c-danger: #d6455f;  --c-warning: #d8a72f;  --c-selection: #bcd6f0;
+  --c-line: #e6ebf3;  --c-glow: rgba(47,128,200,.22);  --c-glow-warm: rgba(224,150,47,.20);
+  --c-gradient-bar: linear-gradient(180deg, #ffffff 0%, #f1f4fa 100%);
+  --c-gradient-side: linear-gradient(180deg, #f7f9fc 0%, #eef1f7 100%);
+  --shadow-1: 0 1px 2px rgba(31,37,51,.08), 0 1px 3px rgba(31,37,51,.06);
+  --shadow-2: 0 2px 6px rgba(31,37,51,.10), 0 6px 16px rgba(31,37,51,.08);
+  --shadow-3: 0 8px 24px rgba(31,37,51,.14), 0 16px 48px rgba(31,37,51,.10);
+  --shadow-pop: 0 12px 40px rgba(31,37,51,.18);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --c-hover: rgba(31, 37, 51, 0.05);
+  --c-active: rgba(47, 128, 200, 0.10);
+  --c-border: rgba(31, 37, 51, 0.08);
+  --c-border-strong: rgba(31, 37, 51, 0.12);
+}
+/* 樱粉（亮色） */
+body[data-theme="sakura"] {
+  --c-bg0: #fdf2f6;  --c-bg1: #fff7fa;  --c-bg2: #fbe9f1;  --c-bg3: #f6d9e6;
+  --c-bg4: #eec4d8;  --c-fg0: #3a2531;  --c-fg1: #5c4153;  --c-fg2: #9a7689;
+  --c-primary: #d6548f;  --c-accent: #f0a05a;  --c-success: #5aa86a;
+  --c-danger: #d6455f;  --c-warning: #e0a93f;  --c-selection: #f4c8dc;
+  --c-line: #f8e1ec;  --c-glow: rgba(214,84,143,.20);  --c-glow-warm: rgba(240,160,90,.20);
+  --c-gradient-bar: linear-gradient(180deg, #fff7fa 0%, #fbe9f1 100%);
+  --c-gradient-side: linear-gradient(180deg, #fdf2f6 0%, #fbe9f1 100%);
+  --shadow-1: 0 1px 2px rgba(58,37,49,.08), 0 1px 3px rgba(58,37,49,.06);
+  --shadow-2: 0 2px 6px rgba(58,37,49,.10), 0 6px 16px rgba(58,37,49,.08);
+  --shadow-3: 0 8px 24px rgba(58,37,49,.14), 0 16px 48px rgba(58,37,49,.10);
+  --shadow-pop: 0 12px 40px rgba(58,37,49,.18);
+  --glass-bg: rgba(255, 247, 250, 0.85);
+  --c-hover: rgba(58, 37, 49, 0.05);
+  --c-active: rgba(214, 84, 143, 0.10);
+  --c-border: rgba(58, 37, 49, 0.08);
+  --c-border-strong: rgba(58, 37, 49, 0.12);
+}
+/* 深蓝（暗色） */
+body[data-theme="midnight"] {
+  --c-bg0: #0a1020;  --c-bg1: #0e1730;  --c-bg2: #14213f;  --c-bg3: #1c2c52;
+  --c-bg4: #2a3c66;  --c-fg0: #dce6f7;  --c-fg1: #a9b8d6;  --c-fg2: #6b7aaa;
+  --c-primary: #5b8def;  --c-accent: #6fd1e6;  --c-success: #4fb477;
+  --c-danger: #e0607a;  --c-warning: #e6c45b;  --c-selection: #28467e;
+  --c-line: #16244a;  --c-glow: rgba(91,141,239,.28);  --c-glow-warm: rgba(111,209,230,.22);
+  --c-gradient-bar: linear-gradient(180deg, #0e1730 0%, #0a1020 100%);
+  --c-gradient-side: linear-gradient(180deg, #0d1530 0%, #0a1020 100%);
+  --c-hover: rgba(255,255,255,.05);
+  --c-active: rgba(91,141,239,.12);
+  --c-border: rgba(255,255,255,.08);
+  --c-border-strong: rgba(255,255,255,.12);
+  --glass-bg: rgba(14, 23, 48, 0.82);
+}
+/* 森野（暗色） */
+body[data-theme="forest"] {
+  --c-bg0: #0c1410;  --c-bg1: #11201a;  --c-bg2: #182a22;  --c-bg3: #224035;
+  --c-bg4: #2f5444;  --c-fg0: #e3efe7;  --c-fg1: #b3c8bb;  --c-fg2: #7d968a;
+  --c-primary: #4cc98a;  --c-accent: #c9a14c;  --c-success: #5cb85c;
+  --c-danger: #e0607a;  --c-warning: #e0c45b;  --c-selection: #2a5544;
+  --c-line: #1a3026;  --c-glow: rgba(76,201,138,.26);  --c-glow-warm: rgba(201,161,76,.22);
+  --c-gradient-bar: linear-gradient(180deg, #11201a 0%, #0c1410 100%);
+  --c-gradient-side: linear-gradient(180deg, #102018 0%, #0c1410 100%);
+  --c-hover: rgba(255,255,255,.05);
+  --c-active: rgba(76,201,138,.12);
+  --c-border: rgba(255,255,255,.08);
+  --c-border-strong: rgba(255,255,255,.12);
+  --glass-bg: rgba(17, 32, 26, 0.82);
+}

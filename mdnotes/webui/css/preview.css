@@ -1,0 +1,75 @@
+/* ===========================================================
+   预览正文样式（由 ui/theme.py 的 PREVIEW_CSS 转写，配色一致）
+   =========================================================== */
+.markdown-body {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--c-fg0);
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  word-wrap: break-word;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3,
+.markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+.markdown-body h1 { font-size: 1.8em; color: var(--c-primary); border-bottom: 2px solid var(--c-bg4); padding-bottom: 0.3em; }
+.markdown-body h2 { font-size: 1.5em; color: var(--c-primary); border-bottom: 1px solid var(--c-bg4); padding-bottom: 0.2em; }
+.markdown-body h3 { font-size: 1.25em; color: var(--c-accent); }
+.markdown-body h4 { font-size: 1.1em; color: var(--c-fg0); }
+.markdown-body a { color: var(--c-primary); text-decoration: none; }
+.markdown-body a:hover { text-decoration: underline; }
+.markdown-body code {
+  background-color: var(--c-bg2);
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--c-accent);
+}
+.markdown-body pre {
+  background-color: var(--c-bg0);
+  border: 1px solid var(--c-bg4);
+  border-radius: 10px;
+  padding: 18px;
+  overflow-x: auto;
+}
+.markdown-body pre code { background: none; padding: 0; color: var(--c-fg0); }
+.markdown-body blockquote {
+  border-left: 3px solid var(--c-primary);
+  margin: 0;
+  padding: 4px 16px;
+  color: var(--c-fg1);
+  background-color: var(--c-bg2);
+  border-radius: 0 6px 6px 0;
+}
+.markdown-body table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+.markdown-body th, .markdown-body td { border: 1px solid var(--c-bg4); padding: 10px 14px; text-align: left; }
+.markdown-body th { background-color: var(--c-bg2); font-weight: 600; }
+.markdown-body tr:nth-child(even) { background-color: var(--c-bg2); }
+.markdown-body img { max-width: 100%; border-radius: 8px; }
+.markdown-body hr { border: none; border-top: 1px solid var(--c-bg4); margin: 1.5em 0; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.5em; }
+.markdown-body li { margin: 0.3em 0; }
+.markdown-body .wikilink { color: var(--c-accent); cursor: pointer; text-decoration: underline dotted; }
+/* 选中文字高亮 ==text== → <mark> */
+.markdown-body mark { background: var(--c-mark, #ffe58a); color: #4a3b00; padding: 0 2px; border-radius: 3px; }
+/* Callout 提示块 */
+.markdown-body .callout { border-left: 4px solid var(--c-primary); border-radius: 6px; padding: 10px 16px; margin: 0.8em 0; background: var(--c-bg1); }
+.markdown-body .callout-title { font-weight: 600; margin-bottom: 6px; }
+.markdown-body .callout.callout-info    { border-color: var(--c-primary); }
+.markdown-body .callout.callout-warning { border-color: #e6a23c; background: color-mix(in srgb, #e6a23c 8%, var(--c-bg1)); }
+.markdown-body .callout.callout-danger  { border-color: #f56c6c; background: color-mix(in srgb, #f56c6c 8%, var(--c-bg1)); }
+.markdown-body .callout.callout-tip     { border-color: #67c23a; background: color-mix(in srgb, #67c23a 8%, var(--c-bg1)); }
+.markdown-body .callout.callout-quote   { border-color: var(--c-fg2); }
+.markdown-body .callout.callout-success { border-color: #67c23a; }
+.markdown-body .callout.callout-question{ border-color: #909399; }
+.markdown-body .callout.callout-example { border-color: #e6a23c; }
+.markdown-body .callout blockquote { background: none; border: none; color: inherit; padding: 0; }
+.markdown-body .mermaid { text-align: center; margin: 1em 0; }
+.markdown-body .codehilite { border-radius: 8px; overflow: hidden; }
+.markdown-body .codehilite pre { margin: 0; border: none; }
