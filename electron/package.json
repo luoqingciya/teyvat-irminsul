@@ -5,6 +5,10 @@
   "main": "main.js",
   "author": "Teyvat Irminsul",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luoqingciya/teyvat-irminsul.git"
+  },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win"
@@ -16,6 +20,11 @@
   "build": {
     "appId": "com.teyvat.irminsul",
     "productName": "TeyvatIrminsul",
+    "publish": {
+      "provider": "github",
+      "owner": "luoqingciya",
+      "repo": "teyvat-irminsul"
+    },
     "directories": {
       "output": "release",
       "buildResources": "../mdnotes/static"
