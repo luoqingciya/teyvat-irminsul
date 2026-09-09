@@ -15,6 +15,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Windows CI（GitHub Actions）默认代码页非 UTF-8，PyInstaller 与脚本的中文输出
+# 会触发 UnicodeEncodeError；统一按 UTF-8 输出（本地开发不受影响）。
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # noqa: BLE001
+        pass
+
 ROOT = Path(__file__).resolve().parent.parent
 
 
